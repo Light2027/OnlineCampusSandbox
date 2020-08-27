@@ -1,0 +1,82 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="Character.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of a single character.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi
+{
+    using System;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+
+    /// <summary>
+    /// This class contains the methods and variables of a single character.
+    /// </summary>
+    /// <seealso cref="Aufgabe4_Istvan_Galfi.Interfaces.IRenderable" />
+    public class Character : IRenderable
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Character"/> class.
+        /// </summary>
+        /// <param name="left">The left offset.</param>
+        /// <param name="top">The top offset.</param>
+        /// <param name="characterColor">Color of the character.</param>
+        /// <param name="symbol">The symbol.</param>
+        /// <exception cref="ArgumentNullException">The Color Container passed to the character cannot be null.</exception>
+        public Character(int left, int top, ColorContainer characterColor, char symbol)
+        {
+            if (characterColor == null)
+            {
+                throw new ArgumentNullException("The Color Container passed to the character cannot be null.");
+            }
+
+            this.Left = left;
+            this.Top = top;
+            this.CharacterColor = characterColor;
+            this.Symbol = symbol;
+        }
+
+        /// <summary>
+        /// Gets or sets the left offset.
+        /// </summary>
+        /// <value>
+        /// The left offset.
+        /// </value>
+        public int Left { get; set; }
+
+        /// <summary>
+        /// Gets or sets the top offset.
+        /// </summary>
+        /// <value>
+        /// The top offset.
+        /// </value>
+        public int Top { get; set; }
+
+        /// <summary>
+        /// Gets the color of the character.
+        /// </summary>
+        /// <value>
+        /// The color of the character.
+        /// </value>
+        public ColorContainer CharacterColor { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the symbol.
+        /// </summary>
+        /// <value>
+        /// The symbol.
+        /// </value>
+        public char Symbol { get; set; }
+
+        /// <summary>
+        /// Draws this.
+        /// </summary>
+        /// <param name="renderer">The renderer.</param>
+        public void Draw(IRenderer renderer)
+        {
+            renderer.Draw(this);
+        }
+    }
+}

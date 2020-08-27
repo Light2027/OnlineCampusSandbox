@@ -1,0 +1,91 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="Application.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains everything required by the Turtle Graphics Application.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi
+{
+    using System;
+    using Aufgabe4_Istvan_Galfi.EventArguments;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+
+    /// <summary>
+    /// This class contains everything required by the Turtle Graphics Application.
+    /// </summary>
+    public class Application
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Application"/> class.
+        /// </summary>
+        public Application()
+        {
+            this.DefaultSettings = ConsoleSettings.Capture();
+        }
+
+        /// <summary>
+        /// Gets the default settings of the user.
+        /// </summary>
+        /// <value>
+        /// The default settings.
+        /// </value>
+        public ConsoleSettings DefaultSettings { get; private set; }
+
+        /// <summary>
+        /// Runs this instance.
+        /// </summary>
+        public void Run()
+        {
+            Console.SetWindowSize(
+                Console.LargestWindowWidth,
+                Console.LargestWindowHeight);
+            Console.SetBufferSize(
+                Console.WindowWidth,
+                Console.WindowHeight);
+
+            int commandCanvasWidth = 30;
+            int commandCanvasHeight = Console.BufferHeight - 1;
+            Canvas commandCanvas = new Canvas(1, 1, commandCanvasWidth, commandCanvasHeight);
+            commandCanvas.InitializeBorders();
+            IRenderer renderer = new ConsoleRenderer(commandCanvas);
+            renderer.RedrawCanvas();
+
+            IInputHandler inputHandler = new ConsoleInputHandler(commandCanvasWidth + 2, 0);
+
+            Parser parser = new Parser();
+
+            Interpreter interpreter = new Interpreter(renderer);
+
+            while (!interpreter.Exit)
+            {
+                try
+                {
+                    renderer.PrintNavigationInstructions(commandCanvasWidth + 2, 10);
+                    string userInput = inputHandler.ReadInputString();
+                    ICommand command = parser.ParseEditorCommand(userInput);
+                    command.Execute(interpreter);
+                }
+                catch (Exception e)
+                {
+                    if (e.Message.Contains(":"))
+                    {
+                        renderer.CanvasFreePrintWarningMessageToPos(e.Message.Split(':')[1], commandCanvasWidth + 2, 2);
+                    }
+                    else
+                    {
+                        renderer.CanvasFreePrintWarningMessageToPos(e.Message, commandCanvasWidth + 2, 2);
+                    }
+
+                    renderer.CanvasFreePrintToPos("Please press Enter to continue!", commandCanvasWidth + 2, 4);
+                    inputHandler.WaitForEnter();
+                    renderer.RedrawCanvas();
+                }
+            }
+
+            inputHandler.WaitForEnter();
+            ConsoleSettings.Reset(this.DefaultSettings);
+        }
+    }
+}

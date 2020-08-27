@@ -1,0 +1,46 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="RemoveCommand.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of the Remove Editor Command.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi.EditorCommands
+{
+    using System;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+
+    /// <summary>
+    /// This class contains the methods and variables of the Remove Editor Command.
+    /// </summary>
+    /// <seealso cref="Aufgabe4_Istvan_Galfi.ICommand" />
+    public class RemoveCommand : ICommand
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="RemoveCommand"/> class.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        public RemoveCommand(int index)
+        {
+            this.Index = index;
+        }
+
+        /// <summary>
+        /// Gets or sets the index, at which the turtle command will be removed.
+        /// </summary>
+        /// <value>
+        /// The index.
+        /// </value>
+        public int Index { get; set; }
+
+        /// <summary>
+        /// Executes this command.
+        /// </summary>
+        /// <param name="interpreter">The interpreter.</param>
+        public void Execute(Interpreter interpreter)
+        {
+            interpreter.Interpret(this);
+        }
+    }
+}

@@ -1,0 +1,356 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="Turtle.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of the Turtle.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using Aufgabe4_Istvan_Galfi.EventArguments;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+    using Aufgabe4_Istvan_Galfi.ThreadArguments;
+
+    /// <summary>
+    /// This class contains the methods and variables of the Turtle.
+    /// </summary>
+    public class Turtle
+    {
+        /// <summary>
+        /// The thread.
+        /// </summary>
+        private readonly Thread thread;
+
+        /// <summary>
+        /// The turtle thread arguments.
+        /// </summary>
+        private TurtleThreadArgs turtleThreadArgs;
+
+        /// <summary>
+        /// The degree.
+        /// </summary>
+        private int degree;
+
+        /// <summary>
+        /// The track color.
+        /// </summary>
+        private ColorContainer trackColor;
+
+        /// <summary>
+        /// The turtle symbol.
+        /// </summary>
+        private Character turtleSymbol;
+
+        /// <summary>
+        /// The on turtle move event arguments.
+        /// </summary>
+        private OnTurtleMoveEventArgs onTurtleMoveEventArgs;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Turtle"/> class.
+        /// </summary>
+        public Turtle()
+        {
+            this.TurtleSymbol = new Character(0, 0, ColorContainer.GetInstanceWithColor("white"), 'X');
+            this.TrackSymbol = '+';
+            this.TrackColor = ColorContainer.GetInstanceWithColor("blue");
+            this.PenIsDown = true;
+            this.Commands = new List<ITurtleCommand>();
+            this.thread = new Thread(this.Worker);
+            this.turtleThreadArgs = new TurtleThreadArgs();
+            this.onTurtleMoveEventArgs = new OnTurtleMoveEventArgs(this);
+            this.MoveDelay = 1000;
+            this.TurtleIsRunning = false;
+        }
+
+        /// <summary>
+        /// Occurs when [before move].
+        /// </summary>
+        public event EventHandler<OnTurtleMoveEventArgs> BeforeMove;
+
+        /// <summary>
+        /// Occurs when [after move].
+        /// </summary>
+        public event EventHandler<OnTurtleMoveEventArgs> AfterMove;
+
+        /// <summary>
+        /// Gets or sets the turtle symbol.
+        /// </summary>
+        /// <value>
+        /// The turtle symbol.
+        /// </value>
+        /// <exception cref="ArgumentNullException">The Turtle Symbol cannot be null.</exception>
+        public Character TurtleSymbol
+        {
+            get
+            {
+                return this.turtleSymbol;
+            }
+
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("The Turtle Symbol cannot be null.");
+                }
+
+                this.turtleSymbol = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the track symbol.
+        /// </summary>
+        /// <value>
+        /// The track symbol.
+        /// </value>
+        public char TrackSymbol { get; set; }
+
+        /// <summary>
+        /// Gets or sets the color of the track.
+        /// </summary>
+        /// <value>
+        /// The color of the track.
+        /// </value>
+        /// <exception cref="ArgumentNullException">The Track Color cannot be null.</exception>
+        public ColorContainer TrackColor
+        {
+            get
+            {
+                return this.trackColor;
+            }
+
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("The Track Color cannot be null.");
+                }
+
+                this.trackColor = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether [turtle is running].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [turtle is running]; otherwise, <c>false</c>.
+        /// </value>
+        public bool TurtleIsRunning { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the left offset.
+        /// </summary>
+        /// <value>
+        /// The left offset.
+        /// </value>
+        public int Left
+        {
+            get
+            {
+                return this.TurtleSymbol.Left;
+            }
+
+            set
+            {
+                this.FireBeforeMove(this.onTurtleMoveEventArgs);
+                this.TurtleSymbol.Left = value;
+                this.FireAfterMove(this.onTurtleMoveEventArgs);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the top offset.
+        /// </summary>
+        /// <value>
+        /// The top offset.
+        /// </value>
+        public int Top
+        {
+            get
+            {
+                return this.TurtleSymbol.Top;
+            }
+
+            set
+            {
+                this.FireBeforeMove(this.onTurtleMoveEventArgs);
+                this.TurtleSymbol.Top = value;
+                this.FireAfterMove(this.onTurtleMoveEventArgs);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the degree.
+        /// </summary>
+        /// <value>
+        /// The degree.
+        /// </value>
+        public int Degree
+        {
+            get
+            {
+                return this.degree;
+            }
+
+            set
+            {
+                int tempDegree = this.degree + value;
+                if (tempDegree < 0)
+                {
+                    this.degree = 360 + tempDegree;
+                }
+                else if (tempDegree >= 360)
+                {
+                    this.degree = tempDegree % 360;
+                }
+                else if (tempDegree < 360)
+                {
+                    this.degree = tempDegree;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether [pen is down].
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [pen is down]; otherwise, <c>false</c>.
+        /// </value>
+        public bool PenIsDown { get; set; }
+
+        /// <summary>
+        /// Gets or sets the commands.
+        /// </summary>
+        /// <value>
+        /// The commands.
+        /// </value>
+        public List<ITurtleCommand> Commands { get; set; }
+
+        /// <summary>
+        /// Gets or sets the move delay.
+        /// </summary>
+        /// <value>
+        /// The move delay.
+        /// </value>
+        private int MoveDelay { get; set; }
+
+        /// <summary>
+        /// Gets the going turtle.
+        /// </summary>
+        /// <param name="interpreter">The interpreter.</param>
+        /// <exception cref="InvalidOperationException">This turtle is Null or already working.</exception>
+        public void GetGoingTurtle(object interpreter)
+        {
+            if (this.thread == null || this.thread.IsAlive)
+            {
+                throw new InvalidOperationException("This turtle is Null or already working!");
+            }
+
+            this.TurtleIsRunning = true;
+            this.thread.Start(interpreter);
+        }
+
+        /// <summary>
+        /// Stops it turtle.
+        /// </summary>
+        /// <exception cref="InvalidOperationException">This turtle was already stopped.</exception>
+        public void StopItTurtle()
+        {
+            if (this.thread != null && !this.thread.IsAlive)
+            {
+                throw new InvalidOperationException("This turtle was already stopped!");
+            }
+
+            this.turtleThreadArgs.Exit = true;
+            this.thread.Join();
+        }
+
+        /// <summary>
+        /// Takes a step.
+        /// </summary>
+        public void TakeAStep()
+        {
+            switch (this.Degree)
+            {
+                case 0:
+                    this.Left++;
+                    Thread.Sleep(this.MoveDelay);
+                    break;
+
+                case 90:
+                    this.Top++;
+                    Thread.Sleep(this.MoveDelay);
+                    break;
+
+                case 180:
+                    this.Left--;
+                    Thread.Sleep(this.MoveDelay);
+                    break;
+
+                case 270:
+                    this.Top--;
+                    Thread.Sleep(this.MoveDelay);
+                    break;
+            }
+        }
+
+        /// <summary>
+        /// The Worker method of the turtles thread.
+        /// </summary>
+        /// <param name="interpreter">The interpreter.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The Worker Method of the Turtle Requires an Interpreter to work.</exception>
+        private void Worker(object interpreter)
+        {
+            Interpreter castedInterpreter = interpreter as Interpreter;
+            if (castedInterpreter == null)
+            {
+                throw new ArgumentOutOfRangeException("The Worker Method of the Turtle Requires an Interpreter to work!");
+            }
+
+            foreach (ICommand command in this.Commands)
+            {
+                if (!this.turtleThreadArgs.Exit)
+                {
+                    command.Execute(castedInterpreter);
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            this.turtleThreadArgs.Exit = true;
+            this.TurtleIsRunning = false;
+        }
+
+        /// <summary>
+        /// Fires the before move.
+        /// </summary>
+        /// <param name="onTurtleMoveEventArgs">The <see cref="onTurtleMoveEventArgs"/> instance containing the event data.</param>
+        private void FireBeforeMove(OnTurtleMoveEventArgs onTurtleMoveEventArgs)
+        {
+            if (this.BeforeMove != null)
+            {
+                this.BeforeMove(this, onTurtleMoveEventArgs);
+            }
+        }
+
+        /// <summary>
+        /// Fires the after move.
+        /// </summary>
+        /// <param name="onTurtleMoveEventArgs">The <see cref="onTurtleMoveEventArgs"/> instance containing the event data.</param>
+        private void FireAfterMove(OnTurtleMoveEventArgs onTurtleMoveEventArgs)
+        {
+            if (this.AfterMove != null)
+            {
+                this.AfterMove(this, onTurtleMoveEventArgs);
+            }
+        }
+    }
+}

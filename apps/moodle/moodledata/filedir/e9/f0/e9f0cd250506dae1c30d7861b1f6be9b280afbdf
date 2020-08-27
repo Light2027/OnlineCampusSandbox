@@ -1,0 +1,181 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="Canvas.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables Belonging to a Canvas.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi
+{
+    using System;
+    using System.Collections.Generic;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+
+    /// <summary>
+    /// This class contains the methods and variables Belonging to a Canvas.
+    /// </summary>
+    public class Canvas
+    {
+        /// <summary>
+        /// The canvas content list.
+        /// </summary>
+        private List<IRenderable> canvasContentList;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Canvas"/> class.
+        /// </summary>
+        /// <param name="originLeft">The origin left.</param>
+        /// <param name="originTop">The origin top.</param>
+        /// <param name="width">The width.</param>
+        /// <param name="height">The height.</param>
+        public Canvas(int originLeft, int originTop, int width, int height)
+        {
+            this.CanvasContentListLocker = new object();
+            this.OriginLeft = originLeft;
+            this.OriginTop = originTop;
+            this.ViewOriginLeft = originLeft;
+            this.ViewOriginTop = originTop;
+            this.Width = width;
+            this.Height = height;
+            this.CanvasContent = new List<IRenderable>();
+            this.CanvasBorder = new List<IRenderable>();
+        }
+
+        /// <summary>
+        /// Gets or sets the canvas content list locker.
+        /// </summary>
+        /// <value>
+        /// The canvas content list locker.
+        /// </value>
+        public object CanvasContentListLocker { get; set; }
+
+        /// <summary>
+        /// Gets or sets the origin left.
+        /// </summary>
+        /// <value>
+        /// The origin left.
+        /// </value>
+        public int OriginLeft { get; set; }
+
+        /// <summary>
+        /// Gets or sets the origin top.
+        /// </summary>
+        /// <value>
+        /// The origin top.
+        /// </value>
+        public int OriginTop { get; set; }
+
+        /// <summary>
+        /// Gets or sets the view origin left.
+        /// </summary>
+        /// <value>
+        /// The view origin left.
+        /// </value>
+        public int ViewOriginLeft { get; set; }
+
+        /// <summary>
+        /// Gets or sets the view origin top.
+        /// </summary>
+        /// <value>
+        /// The view origin top.
+        /// </value>
+        public int ViewOriginTop { get; set; }
+
+        /// <summary>
+        /// Gets or sets the width.
+        /// </summary>
+        /// <value>
+        /// The width.
+        /// </value>
+        public int Width { get; set; }
+
+        /// <summary>
+        /// Gets or sets the height.
+        /// </summary>
+        /// <value>
+        /// The height.
+        /// </value>
+        public int Height { get; set; }
+
+        /// <summary>
+        /// Gets or sets the content of the canvas.
+        /// </summary>
+        /// <value>The content of the canvas.</value>
+        /// <exception cref="ArgumentNullException">The Canvas Content list cannot be null.</exception>
+        public List<IRenderable> CanvasContent
+        {
+            get
+            {
+                return this.canvasContentList;
+            }
+
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("The Canvas Content list cannot be null.");
+                }
+
+                this.canvasContentList = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the canvas border.
+        /// </summary>
+        /// <value>
+        /// The canvas border.
+        /// </value>
+        public List<IRenderable> CanvasBorder { get; private set; }
+
+        /// <summary>
+        /// Adds to content list asynchronously.
+        /// </summary>
+        /// <param name="renderableItem">The render-able item.</param>
+        /// <exception cref="ArgumentNullException">The render-able Item cannot be null.</exception>
+        public void AddToContentListAsync(IRenderable renderableItem)
+        {
+            if (renderableItem == null)
+            {
+                throw new ArgumentNullException("The render-able Item cannot be null.");
+            }
+
+            lock (this.CanvasContentListLocker)
+            {
+                this.CanvasContent.Add(renderableItem);
+            }
+        }
+
+        /// <summary>
+        /// Initializes the borders of the canvas if desired.
+        /// </summary>
+        public void InitializeBorders()
+        {
+            for (int row = 0; row <= this.Height; row++)
+            {
+                for (int col = 0; col <= this.Width; col++)
+                {
+                    if (row == 0 || row == this.Height)
+                    {
+                        Character border = new Character(
+                            this.OriginLeft - 1 + col,
+                            this.OriginTop - 1 + row,
+                            ColorContainer.GetInstanceWithColor("white"),
+                            '#');
+                        this.CanvasBorder.Add(border);
+                    }
+                    else if (col == 0 || col == this.Width)
+                    {
+                        Character border = new Character(
+                            this.OriginLeft - 1 + col,
+                            this.OriginTop - 1 + row,
+                            ColorContainer.GetInstanceWithColor("white"),
+                            '#');
+                        this.CanvasBorder.Add(border);
+                    }
+                }
+            }
+        }
+    }
+}

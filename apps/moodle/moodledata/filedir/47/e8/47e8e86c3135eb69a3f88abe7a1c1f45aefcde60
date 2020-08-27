@@ -1,0 +1,46 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="ShowLineCommand.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of the Show Line Editor Command.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi.EditorCommands
+{
+    using System;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+
+    /// <summary>
+    /// This class contains the methods and variables of the Show Line Editor Command.
+    /// </summary>
+    /// <seealso cref="Aufgabe4_Istvan_Galfi.ICommand" />
+    public class ShowLineCommand : ICommand
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ShowLineCommand"/> class.
+        /// </summary>
+        /// <param name="lineIndex">Index of the line.</param>
+        public ShowLineCommand(int lineIndex)
+        {
+            this.LineIndex = lineIndex;
+        }
+
+        /// <summary>
+        /// Gets the index of the line.
+        /// </summary>
+        /// <value>
+        /// The index of the line.
+        /// </value>
+        public int LineIndex { get; private set; }
+
+        /// <summary>
+        /// Executes this command.
+        /// </summary>
+        /// <param name="interpreter">The interpreter.</param>
+        public void Execute(Interpreter interpreter)
+        {
+            interpreter.Interpret(this);
+        }
+    }
+}

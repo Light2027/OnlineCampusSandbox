@@ -1,0 +1,194 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="TurtleManager.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of the Turtle Manager.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using Aufgabe4_Istvan_Galfi.EventArguments;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+
+    /// <summary>
+    /// This class contains the methods and variables of the Turtle Manager.
+    /// </summary>
+    public class TurtleManager
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="TurtleManager"/> class.
+        /// </summary>
+        /// <param name="renderer">The renderer.</param>
+        /// <exception cref="ArgumentNullException">The Passed renderer cannot be null.</exception>
+        public TurtleManager(IRenderer renderer)
+        {
+            if (renderer == null)
+            {
+                throw new ArgumentNullException("The Passed renderer cannot be null.");
+            }
+
+            this.Renderer = renderer;
+            this.Turtles = new List<Turtle>();
+            this.CreateNewTurtle();
+        }
+
+        /// <summary>
+        /// Gets the renderer.
+        /// </summary>
+        /// <value>
+        /// The renderer.
+        /// </value>
+        public IRenderer Renderer { get; private set; }
+
+        /// <summary>
+        /// Gets the turtles.
+        /// </summary>
+        /// <value>
+        /// The turtles.
+        /// </value>
+        public List<Turtle> Turtles { get; private set; }
+
+        /// <summary>
+        /// Gets the current turtle.
+        /// </summary>
+        /// <value>
+        /// The current turtle.
+        /// </value>
+        public Turtle CurrentTurtle { get; private set; }
+
+        /// <summary>
+        /// Creates a new turtle.
+        /// </summary>
+        public void CreateNewTurtle()
+        {
+            if (this.CurrentTurtle == null)
+            {
+                this.CurrentTurtle = new Turtle();
+            }
+            else
+            {
+                this.Turtles.Add(this.CurrentTurtle);
+                this.CurrentTurtle = new Turtle();
+            }
+        }
+
+        /// <summary>
+        /// Takes the turtle command.
+        /// </summary>
+        /// <param name="turtleCommand">The turtle command.</param>
+        public void TakeTurtleCommand(ITurtleCommand turtleCommand)
+        {
+            turtleCommand.Turtle = this.CurrentTurtle;
+            this.CurrentTurtle.Commands.Add(turtleCommand);
+        }
+
+        /// <summary>
+        /// Gets the turtles going.
+        /// </summary>
+        /// <param name="interpreter">The interpreter.</param>
+        public void GetTheTurtlesGoing(Interpreter interpreter)
+        {
+            Canvas turtleCanvas = new Canvas(0, 0, Console.BufferWidth, Console.BufferHeight);
+            this.Renderer.DrawingBoard = turtleCanvas;
+            this.Renderer.TurnCursorVisibilityOff();
+            this.Turtles.Add(this.CurrentTurtle);
+            foreach (Turtle turtle in this.Turtles)
+            {
+                this.Renderer.DrawingBoard.CanvasContent.Add(turtle.TurtleSymbol);
+                turtle.BeforeMove += this.TurtleBeforeMoveEvent;
+                turtle.AfterMove += this.TurtleAfterMoveEvent;
+                turtle.GetGoingTurtle(interpreter);
+            }
+
+            this.Renderer.RedrawCanvas();
+        }
+
+        /// <summary>
+        /// Turtles the before move event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="onTurtleMoveEventArgs">The <see cref="OnTurtleMoveEventArgs"/> instance containing the event data.</param>
+        public void TurtleBeforeMoveEvent(object sender, OnTurtleMoveEventArgs onTurtleMoveEventArgs)
+        {
+            if (onTurtleMoveEventArgs.SenderTurtle.PenIsDown && !this.Renderer.OutOfCanvasBounds(onTurtleMoveEventArgs.SenderTurtle.Left, onTurtleMoveEventArgs.SenderTurtle.Top))
+            {
+                Character trackChar = new Character(
+                    onTurtleMoveEventArgs.SenderTurtle.Left,
+                    onTurtleMoveEventArgs.SenderTurtle.Top,
+                    onTurtleMoveEventArgs.SenderTurtle.TrackColor,
+                    onTurtleMoveEventArgs.SenderTurtle.TrackSymbol);
+                this.Renderer.DrawingBoard.AddToContentListAsync(trackChar);
+            }
+        }
+
+        /// <summary>
+        /// Turtles the after move event.
+        /// </summary>
+        /// <param name="sender">The sender.</param>
+        /// <param name="onTurtleMoveEventArgs">The <see cref="OnTurtleMoveEventArgs"/> instance containing the event data.</param>
+        public void TurtleAfterMoveEvent(object sender, OnTurtleMoveEventArgs onTurtleMoveEventArgs)
+        {
+            foreach (Turtle turtle in this.Turtles)
+            {
+                lock (this.Renderer.DrawingBoard.CanvasContentListLocker)
+                {
+                    this.Renderer.DrawingBoard.CanvasContent.Remove(turtle.TurtleSymbol);
+                    this.Renderer.DrawingBoard.CanvasContent.Add(turtle.TurtleSymbol); 
+                }
+            }
+
+            this.Renderer.RedrawCanvas();
+        }
+
+        /// <summary>
+        /// Checks if turtle can take a step.
+        /// </summary>
+        /// <param name="turtle">The turtle.</param>
+        /// <returns>True if the turtle can take a step, else false.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The Turtles Degree of rotation is invalid.</exception>
+        public bool CheckIfTurtleCanTakeAStep(Turtle turtle)
+        {
+            switch (turtle.Degree)
+            {
+                case 0:
+                    return !this.Renderer.OutOfCanvasBounds(turtle.TurtleSymbol.Left + 1, turtle.TurtleSymbol.Top);
+
+                case 90:
+                    return !this.Renderer.OutOfCanvasBounds(turtle.TurtleSymbol.Left, turtle.TurtleSymbol.Top + 1);
+
+                case 180:
+                    return !this.Renderer.OutOfCanvasBounds(turtle.TurtleSymbol.Left - 1, turtle.TurtleSymbol.Top);
+
+                case 270:
+                    return !this.Renderer.OutOfCanvasBounds(turtle.TurtleSymbol.Left, turtle.TurtleSymbol.Top - 1);
+            }
+
+            throw new ArgumentOutOfRangeException("The Turtles Degree of rotation is invalid!");
+        }
+
+        /// <summary>
+        /// Waits for turtles to be done.
+        /// </summary>
+        public void WaitForTurtlesToBeDone()
+        {
+            while (true)
+            {
+                bool turtlesAreRunning = false;
+                foreach (Turtle turtle in this.Turtles)
+                {
+                    turtlesAreRunning = turtle.TurtleIsRunning;
+                }
+
+                Thread.Sleep(125);
+                if (!turtlesAreRunning)
+                {
+                    break;
+                }
+            }
+        }
+    }
+}

@@ -1,0 +1,102 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="ColorContainer.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of a Color Container.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi
+{
+    using System;
+
+    /// <summary>
+    /// This class contains the methods and variables of a Color Container.
+    /// </summary>
+    public class ColorContainer
+    {
+        /// <summary>
+        /// Prevents a default instance of the <see cref="ColorContainer"/> class from being created.
+        /// </summary>
+        private ColorContainer()
+        {
+        }
+
+        /// <summary>
+        /// Gets the Color contained in the container.
+        /// </summary>
+        /// <value>
+        /// The Console Color.
+        /// </value>
+        public ConsoleColor ContainedColor { get; private set; }
+
+        /// <summary>Gets a new instance with the desired color, if possible.</summary>
+        /// <param name="colorString">The desired color in string form.</param>
+        /// <returns>A new Container, containing the desired color.</returns>
+        /// <exception cref="ArgumentNullException">The color string cannot be null or empty.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The value {colorString} is either not a color or is unavailable.</exception>
+        public static ColorContainer GetInstanceWithColor(string colorString)
+        {
+            if (string.IsNullOrEmpty(colorString))
+            {
+                throw new ArgumentNullException("The color string cannot be null or empty.");
+            }
+
+            ColorContainer color = new ColorContainer();
+
+            switch (colorString.ToLower())
+            {
+                case "black":
+                    color.ContainedColor = ConsoleColor.Black;
+                    return color;
+                case "darkblue":
+                    color.ContainedColor = ConsoleColor.DarkBlue;
+                    return color;
+                case "darkgreen":
+                    color.ContainedColor = ConsoleColor.DarkGreen;
+                    return color;
+                case "darkcyan":
+                    color.ContainedColor = ConsoleColor.DarkCyan;
+                    return color;
+                case "darkred":
+                    color.ContainedColor = ConsoleColor.DarkRed;
+                    return color;
+                case "darkmagenta":
+                    color.ContainedColor = ConsoleColor.DarkMagenta;
+                    return color;
+                case "darkyellow":
+                    color.ContainedColor = ConsoleColor.DarkYellow;
+                    return color;
+                case "gray":
+                    color.ContainedColor = ConsoleColor.Gray;
+                    return color;
+                case "darkgray":
+                    color.ContainedColor = ConsoleColor.DarkGray;
+                    return color;
+                case "blue":
+                    color.ContainedColor = ConsoleColor.Blue;
+                    return color;
+                case "green":
+                    color.ContainedColor = ConsoleColor.Green;
+                    return color;
+                case "cyan":
+                    color.ContainedColor = ConsoleColor.Cyan;
+                    return color;
+                case "red":
+                    color.ContainedColor = ConsoleColor.Red;
+                    return color;
+                case "magenta":
+                    color.ContainedColor = ConsoleColor.Magenta;
+                    return color;
+                case "yellow":
+                    color.ContainedColor = ConsoleColor.Yellow;
+                    return color;
+                case "white":
+                    color.ContainedColor = ConsoleColor.White;
+                    return color;
+            }
+
+            throw new ArgumentOutOfRangeException($"The value {colorString} is either not a color or is unavailable!");
+        }
+    }
+}

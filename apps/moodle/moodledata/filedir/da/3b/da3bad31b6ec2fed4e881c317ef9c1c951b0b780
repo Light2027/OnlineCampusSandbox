@@ -1,0 +1,28 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="ITurtleCommand.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This Interface contains the methods and properties that needs to be implemented by every turtle command.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi.Interfaces
+{
+    using System;
+
+    /// <summary>
+    /// This Interface contains the methods and properties that needs to be implemented by every turtle command.
+    /// </summary>
+    /// <seealso cref="Aufgabe4_Istvan_Galfi.Interfaces.ICommand" />
+    /// <seealso cref="Aufgabe4_Istvan_Galfi.Interfaces.IRenderable" />
+    public interface ITurtleCommand : ICommand, IRenderable
+    {
+        /// <summary>
+        /// Gets or sets the turtle, this command belongs to.
+        /// </summary>
+        /// <value>
+        /// The turtle.
+        /// </value>
+        Turtle Turtle { get; set; }
+    }
+}

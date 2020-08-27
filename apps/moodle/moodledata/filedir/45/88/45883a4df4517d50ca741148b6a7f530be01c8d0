@@ -1,0 +1,28 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="Program.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This the main class of our application.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi
+{
+    using System;
+
+    /// <summary>
+    /// This the main class of our application.
+    /// </summary>
+    public class Program
+    {
+        /// <summary>
+        /// Defines the entry point of the application.
+        /// </summary>
+        /// <param name="args">The arguments.</param>
+        public static void Main(string[] args)
+        {
+            Application app = new Application();
+            app.Run();
+        }
+    }
+}

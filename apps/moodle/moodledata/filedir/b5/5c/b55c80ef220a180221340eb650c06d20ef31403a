@@ -1,0 +1,29 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="IInputHandler.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This Interface contains the methods and properties that needs to be implemented by every Input handler.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi.Interfaces
+{
+    using System;
+
+    /// <summary>
+    /// This Interface contains the methods and properties that needs to be implemented by every Input handler.
+    /// </summary>
+    public interface IInputHandler
+    {
+        /// <summary>
+        /// Reads the input string.
+        /// </summary>
+        /// <returns>The Read String.</returns>
+        string ReadInputString();
+
+        /// <summary>
+        /// Waits for enter.
+        /// </summary>
+        void WaitForEnter();
+    }
+}

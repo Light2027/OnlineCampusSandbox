@@ -1,0 +1,138 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="IRenderer.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This Interface contains the methods and properties that needs to be implemented by every renderer.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi.Interfaces
+{
+    using System;
+    using Aufgabe4_Istvan_Galfi.TurtleCommmands;
+
+    /// <summary>
+    /// This Interface contains the methods and properties that needs to be implemented by every renderer.
+    /// </summary>
+    public interface IRenderer
+    {
+        /// <summary>
+        /// Gets or sets the drawing board of the renderer.
+        /// </summary>
+        /// <value>
+        /// The drawing board.
+        /// </value>
+        Canvas DrawingBoard { get; set; }
+
+        /// <summary>
+        /// Prints the navigation instructions.
+        /// </summary>
+        /// <param name="left">The left offset.</param>
+        /// <param name="top">The top offset.</param>
+        void PrintNavigationInstructions(int left, int top);
+
+        /// <summary>
+        /// Redraws the canvas.
+        /// </summary>
+        void RedrawCanvas();
+
+        /// <summary>
+        /// Clears this instance.
+        /// </summary>
+        void Clear();
+
+        /// <summary>
+        /// Resets the colors.
+        /// </summary>
+        void ResetColors();
+
+        /// <summary>
+        /// Checks whether or not the position is outside the canvas bounds.
+        /// </summary>
+        /// <param name="left">The left offset.</param>
+        /// <param name="top">The top offset.</param>
+        /// <returns>True if yes, false if no.</returns>
+        bool OutOfCanvasBounds(int left, int top);
+
+        /// <summary>
+        /// Prints to the console.
+        /// </summary>
+        /// <param name="text">The text to print.</param>
+        void CanvasFreePrint(string text);
+
+        /// <summary>
+        /// Prints to a position anywhere in the console.
+        /// </summary>
+        /// <param name="text">The text to print.</param>
+        /// <param name="left">The left offset.</param>
+        /// <param name="top">The top offset.</param>
+        void CanvasFreePrintToPos(string text, int left, int top);
+
+        /// <summary>
+        /// Prints the warning message to position.
+        /// </summary>
+        /// <param name="text">The text to print.</param>
+        /// <param name="left">The left offset.</param>
+        /// <param name="top">The top offset.</param>
+        void CanvasFreePrintWarningMessageToPos(string text, int left, int top);
+
+        /// <summary>
+        /// Turns the cursor visibility off.
+        /// </summary>
+        void TurnCursorVisibilityOff();
+
+        /// <summary>
+        /// Draws the specified pen down command.
+        /// </summary>
+        /// <param name="penDownCommand">The pen down command.</param>
+        void Draw(PenDownCommand penDownCommand);
+
+        /// <summary>
+        /// Draws the specified pen up command.
+        /// </summary>
+        /// <param name="penUpCommand">The pen up command.</param>
+        void Draw(PenUpCommand penUpCommand);
+
+        /// <summary>
+        /// Draws the specified character.
+        /// </summary>
+        /// <param name="character">The character.</param>
+        void Draw(Character character);
+
+        /// <summary>
+        /// Draws the specified move command.
+        /// </summary>
+        /// <param name="moveCommand">The move command.</param>
+        void Draw(MoveCommand moveCommand);
+
+        /// <summary>
+        /// Draws the specified change color command.
+        /// </summary>
+        /// <param name="changeColorCommand">The change color command.</param>
+        void Draw(ChangeColorCommand changeColorCommand);
+
+        /// <summary>
+        /// Draws the specified change track symbol command.
+        /// </summary>
+        /// <param name="changeTrackSymbolCommand">The change track symbol command.</param>
+        void Draw(ChangeTrackSymbolCommand changeTrackSymbolCommand);
+
+        /// <summary>
+        /// Draws the specified change turtle symbol command.
+        /// </summary>
+        /// <param name="changeTurtleSymbolCommand">The change turtle symbol command.</param>
+        void Draw(ChangeTurtleSymbolCommand changeTurtleSymbolCommand);
+
+        /// <summary>
+        /// Draws the specified sleep command.
+        /// </summary>
+        /// <param name="sleepCommand">The sleep command.</param>
+        void Draw(SleepCommand sleepCommand);
+
+        /// <summary>
+        /// Draws the specified rotate command.
+        /// </summary>
+        /// <param name="rotateCommand">The rotate command.</param>
+        void Draw(RotateCommand rotateCommand);
+    }
+}

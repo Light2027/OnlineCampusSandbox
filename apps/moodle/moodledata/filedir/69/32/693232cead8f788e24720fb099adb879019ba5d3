@@ -1,0 +1,225 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="Parser.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of the Parser.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi
+{
+    using System;
+    using Aufgabe4_Istvan_Galfi.EditorCommands;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+    using Aufgabe4_Istvan_Galfi.TurtleCommmands;
+
+    /// <summary>
+    /// This class contains the methods and variables of the Parser.
+    /// </summary>
+    public class Parser
+    {
+        /// <summary>
+        /// Parses the editor command.
+        /// </summary>
+        /// <param name="command">The command.</param>
+        /// <returns>A Parsed Editor command.</returns>
+        /// <exception cref="ArgumentNullException">The Input cannot be empty.</exception>
+        /// <exception cref="IndexOutOfRangeException">
+        /// The add Editor command requires a turtle command.
+        /// or
+        /// The insert Editor command requires an index as its first argument.
+        /// or
+        /// The insert Editor command requires a turtle command as its second argument.
+        /// or
+        /// The remove Editor command requires an index as its first argument.
+        /// </exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// The Show line editor command requires a positive whole number as its value.
+        /// or
+        /// The value of the Index must be a whole number between {0} and {integer.MaxValue}.
+        /// or
+        /// The value of the Index must be a whole number between {0} and {integer.MaxValue}.
+        /// or
+        /// {splitCommand[0]} is not a valid Editor Command.
+        /// </exception>
+        public ICommand ParseEditorCommand(string command)
+        {
+            if (string.IsNullOrEmpty(command))
+            {
+                throw new ArgumentNullException("The Input cannot be empty!");
+            }
+
+            string[] splitCommand = command.Split();
+            switch (splitCommand[0].ToLower())
+            {
+                case "showline":
+                    string lineValueString;
+                    try
+                    {
+                        lineValueString = splitCommand[1];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        lineValueString = string.Empty;
+                    }
+
+                    if (!int.TryParse(lineValueString, out int temp) || temp < 0)
+                    {
+                        throw new ArgumentOutOfRangeException("The Show line editor command requires a positive whole number or 0 as its value.");
+                    }
+
+                    ShowLineCommand showLine = new ShowLineCommand(int.Parse(lineValueString));
+                    return showLine;
+
+                case "clear":
+                    ICommand clear = new ClearCommand();
+                    return clear;
+
+                case "add":
+                    string addCommandString;
+                    try
+                    {
+                        addCommandString = splitCommand[1];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        throw new IndexOutOfRangeException("The add Editor command requires a turtle command!");
+                    }
+
+                    string addValueString;
+                    try
+                    {
+                        addValueString = splitCommand[2];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        addValueString = string.Empty;
+                    }
+
+                    ITurtleCommand addTurtleCommand = this.ParseTurtleCommand(addCommandString, addValueString);
+
+                    ICommand add = new AddCommand(addTurtleCommand);
+                    return add;
+
+                case "insert":
+                    string insertIndexString;
+                    try
+                    {
+                        insertIndexString = splitCommand[1];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        throw new IndexOutOfRangeException("The insert Editor command requires an index as its first argument!");
+                    }
+
+                    int insterIndex;
+                    if (!int.TryParse(insertIndexString, out insterIndex))
+                    {
+                        throw new ArgumentOutOfRangeException($"The value of the Index must be a whole number between {0} and {int.MaxValue}!");
+                    }
+
+                    string insertCommandString;
+                    try
+                    {
+                        insertCommandString = splitCommand[2];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        throw new IndexOutOfRangeException("The insert Editor command requires a turtle command as its second argument!");
+                    }
+
+                    string insertValueString;
+                    try
+                    {
+                        insertValueString = splitCommand[3];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        insertValueString = string.Empty;
+                    }
+
+                    ITurtleCommand turtleCommand = this.ParseTurtleCommand(insertCommandString, insertValueString);
+
+                    ICommand insert = new InsertCommand(insterIndex, turtleCommand);
+                    return insert;
+
+                case "remove":
+                    string removeIndexString;
+                    try
+                    {
+                        removeIndexString = splitCommand[1];
+                    }
+                    catch (IndexOutOfRangeException)
+                    {
+                        throw new IndexOutOfRangeException("The remove Editor command requires an index as its first argument!");
+                    }
+
+                    int removeIndex;
+                    if (!int.TryParse(removeIndexString, out removeIndex))
+                    {
+                        throw new ArgumentOutOfRangeException($"The value of the Index must be a whole number between {0} and {int.MaxValue}!");
+                    }
+
+                    ICommand remove = new RemoveCommand(removeIndex);
+                    return remove;
+
+                case "new":
+                    ICommand newCmd = new NewCommand();
+                    return newCmd;
+
+                case "run":
+                    ICommand run = new RunCommand();
+                    return run;
+            }
+
+            throw new ArgumentOutOfRangeException($"{splitCommand[0]} is not a valid Editor Command");
+        }
+
+        /// <summary>
+        /// Parses the turtle command.
+        /// </summary>
+        /// <param name="command">The command.</param>
+        /// <param name="value">The value.</param>
+        /// <returns>A Turtle Command.</returns>
+        /// <exception cref="ArgumentOutOfRangeException">The {command} is not a valid Turtle command.</exception>
+        private ITurtleCommand ParseTurtleCommand(string command, string value)
+        {
+            switch (command.ToLower())
+            {
+                case "move":
+                    ITurtleCommand move = MoveCommand.Parse(value);
+                    return move;
+
+                case "rotate":
+                    ITurtleCommand rotate = RotateCommand.Parse(value);
+                    return rotate;
+
+                case "sleep":
+                    ITurtleCommand sleep = SleepCommand.Parse(value);
+                    return sleep;
+
+                case "penup":
+                    ITurtleCommand penUp = new PenUpCommand();
+                    return penUp;
+
+                case "pendown":
+                    ITurtleCommand penDown = new PenDownCommand();
+                    return penDown;
+
+                case "changecolor":
+                    ITurtleCommand changeColor = ChangeColorCommand.Parse(value);
+                    return changeColor;
+
+                case "changetracksymbol":
+                    ITurtleCommand changeTrackSymbol = ChangeTrackSymbolCommand.Parse(value);
+                    return changeTrackSymbol;
+
+                case "changeturtlesymbol":
+                    ITurtleCommand changeTurtleSymbol = ChangeTurtleSymbolCommand.Parse(value);
+                    return changeTurtleSymbol;
+            }
+
+            throw new ArgumentOutOfRangeException($"{command} is not a valid Turtle command!");
+        }
+    }
+}

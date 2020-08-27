@@ -1,0 +1,73 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="ConsoleInputHandler.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of the Input handler.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi
+{
+    using System;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+
+    /// <summary>
+    /// This class contains the methods and variables of the Input handler.
+    /// </summary>
+    /// <seealso cref="Aufgabe4_Istvan_Galfi.Interfaces.IInputHandler" />
+    public class ConsoleInputHandler : IInputHandler
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConsoleInputHandler"/> class.
+        /// </summary>
+        /// <param name="left">The left offset for the read line.</param>
+        /// <param name="top">The top offset for the read line.</param>
+        public ConsoleInputHandler(int left, int top)
+        {
+            this.Left = left;
+            this.Top = top;
+        }
+
+        /// <summary>
+        /// Gets or sets the left offset for the read line.
+        /// </summary>
+        /// <value>
+        /// The left offset.
+        /// </value>
+        public int Left { get; set; }
+
+        /// <summary>
+        /// Gets or sets the top offset for the read line.
+        /// </summary>
+        /// <value>
+        /// The top offset.
+        /// </value>
+        public int Top { get; set; }
+
+        /// <summary>
+        /// Reads the input string.
+        /// </summary>
+        /// <returns>The Read string.</returns>
+        public string ReadInputString()
+        {
+            Console.SetCursorPosition(this.Left, this.Top);
+            string userInput = Console.ReadLine();
+
+            return userInput;
+        }
+
+        /// <summary>
+        /// Waits for enter.
+        /// </summary>
+        public void WaitForEnter()
+        {
+            while (true)
+            {
+                if (Console.ReadKey(true).Key == ConsoleKey.Enter)
+                {
+                    break;
+                }
+            }
+        }
+    }
+}

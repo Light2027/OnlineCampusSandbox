@@ -1,0 +1,292 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="Interpreter.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of the Interpreter.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi
+{
+    using System;
+    using System.Collections.Generic;
+    using System.Threading;
+    using Aufgabe4_Istvan_Galfi.EditorCommands;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+    using Aufgabe4_Istvan_Galfi.TurtleCommmands;
+
+    /// <summary>
+    /// This class contains the methods and variables of the Interpreter.
+    /// </summary>
+    public class Interpreter
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Interpreter"/> class.
+        /// </summary>
+        /// <param name="renderer">The renderer.</param>
+        /// <exception cref="ArgumentNullException">The Passed renderer cannot be null.</exception>
+        public Interpreter(IRenderer renderer)
+        {
+            if (renderer == null)
+            {
+                throw new ArgumentNullException("The Passed renderer cannot be null.");
+            }
+
+            this.TurtleManager = new TurtleManager(renderer);
+            this.Renderer = renderer;
+            this.Exit = false;
+        }
+
+        /// <summary>
+        /// Gets the turtle manager.
+        /// </summary>
+        /// <value>
+        /// The turtle manager.
+        /// </value>
+        public TurtleManager TurtleManager { get; private set; }
+
+        /// <summary>
+        /// Gets the renderer.
+        /// </summary>
+        /// <value>
+        /// The renderer.
+        /// </value>
+        public IRenderer Renderer { get; private set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="Interpreter"/> should exit.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if exit; otherwise, <c>false</c>.
+        /// </value>
+        public bool Exit { get; set; }
+
+        // Editor Commands
+
+        /// <summary>
+        /// Interprets the specified show line command.
+        /// </summary>
+        /// <param name="showLineCommand">The show line command.</param>
+        /// <exception cref="ArgumentOutOfRangeException">That the line does not exist.</exception>
+        public void Interpret(ShowLineCommand showLineCommand)
+        {
+            if (showLineCommand.LineIndex < this.TurtleManager.CurrentTurtle.Commands.Count)
+            {
+                this.Renderer.DrawingBoard.ViewOriginTop = this.Renderer.DrawingBoard.OriginTop - showLineCommand.LineIndex;
+                this.Renderer.RedrawCanvas();
+            }
+            else
+            {
+                throw new ArgumentOutOfRangeException("That the line does not exist.");
+            }
+        }
+
+        /// <summary>
+        /// Interprets the specified clear command.
+        /// </summary>
+        /// <param name="clear">The clear command.</param>
+        public void Interpret(ClearCommand clear)
+        {
+            // Renderer.ClearCurrentCommands()
+            // Assign a new list to the current command list
+            this.TurtleManager.CurrentTurtle.Commands = new List<ITurtleCommand>();
+            this.Renderer.DrawingBoard.CanvasContent = new List<IRenderable>();
+            this.Renderer.RedrawCanvas();
+        }
+
+        /// <summary>
+        /// Interprets the specified add command.
+        /// </summary>
+        /// <param name="add">The add command.</param>
+        public void Interpret(AddCommand add)
+        {
+            // Add the Turtle Command to the command list
+            this.TurtleManager.TakeTurtleCommand(add.TurtleCommand);
+            this.Renderer.DrawingBoard.CanvasContent.Add(add.TurtleCommand);
+            this.Renderer.RedrawCanvas();
+        }
+
+        /// <summary>
+        /// Interprets the specified insert command.
+        /// </summary>
+        /// <param name="insert">The insert command.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The Index was out of range.</exception>
+        public void Interpret(InsertCommand insert)
+        {
+            // add the Turtle Command to the command list at the specified (index - 1)
+            try
+            {
+                insert.TurtleCommand.Turtle = this.TurtleManager.CurrentTurtle;
+                this.TurtleManager.CurrentTurtle.Commands.Insert(insert.Index, insert.TurtleCommand);
+                this.Renderer.DrawingBoard.CanvasContent.Insert(insert.Index, insert.TurtleCommand);
+                this.Renderer.RedrawCanvas();
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                throw new ArgumentOutOfRangeException("The Index was out of range!");
+            }
+        }
+
+        /// <summary>
+        /// Interprets the specified remove command.
+        /// </summary>
+        /// <param name="remove">The remove command.</param>
+        /// <exception cref="ArgumentOutOfRangeException">The Index was out of range.</exception>
+        public void Interpret(RemoveCommand remove)
+        {
+            // remove the Turtle Command from the command list at the specified (index - 1)
+            try
+            {
+                this.TurtleManager.CurrentTurtle.Commands.RemoveAt(remove.Index);
+                this.Renderer.DrawingBoard.CanvasContent.RemoveAt(remove.Index);
+                this.Renderer.RedrawCanvas();
+            }
+            catch (ArgumentOutOfRangeException)
+            {
+                throw new ArgumentOutOfRangeException("The Index was out of range!");
+            }
+
+            this.Renderer.RedrawCanvas();
+        }
+
+        /// <summary>
+        /// Interprets the specified new command.
+        /// </summary>
+        /// <param name="newCommand">The new command.</param>
+        public void Interpret(NewCommand newCommand)
+        {
+            // Shove the Current command list into the current Turtle and create a new one and assign it as the current one.
+            this.TurtleManager.CreateNewTurtle();
+            this.Renderer.DrawingBoard.CanvasContent = new List<IRenderable>();
+            this.Renderer.RedrawCanvas();
+        }
+
+        /// <summary>
+        /// Interprets the specified run command.
+        /// </summary>
+        /// <param name="run">The run command.</param>
+        public void Interpret(RunCommand run)
+        {
+            // Let the turtles run
+            this.TurtleManager.GetTheTurtlesGoing(this);
+            this.TurtleManager.WaitForTurtlesToBeDone();
+            this.Exit = true;
+        }
+
+        // Turtle Commands
+
+        /// <summary>
+        /// Interprets the specified move command.
+        /// </summary>
+        /// <param name="move">The move command.</param>
+        public void Interpret(MoveCommand move)
+        {
+            if (move.Turtle.PenIsDown)
+            {
+                for (int i = 0; i < move.Value; i++)
+                {
+                    if (this.TurtleManager.CheckIfTurtleCanTakeAStep(move.Turtle))
+                    {
+                        move.Turtle.TakeAStep();
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                // Add a character at the end of the move. 
+                Character trackChar = new Character(
+                                move.Turtle.Left,
+                                move.Turtle.Top,
+                                move.Turtle.TrackColor,
+                                move.Turtle.TrackSymbol);
+                this.Renderer.DrawingBoard.AddToContentListAsync(trackChar);
+            }
+            else
+            {
+                for (int i = 0; i < move.Value; i++)
+                {
+                    if (this.TurtleManager.CheckIfTurtleCanTakeAStep(move.Turtle))
+                    {
+                        move.Turtle.TakeAStep();  
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+            }
+        }
+
+        /// <summary>
+        /// Interprets the specified rotate command.
+        /// </summary>
+        /// <param name="rotate">The rotate command.</param>
+        public void Interpret(RotateCommand rotate)
+        {
+            // "Rotate" the turtle, by adding the value of degree to the turtles!
+            rotate.Turtle.Degree = rotate.Degree;
+        }
+
+        /// <summary>
+        /// Interprets the specified sleep command.
+        /// </summary>
+        /// <param name="sleep">The sleep command.</param>
+        public void Interpret(SleepCommand sleep)
+        {
+            // it is the delay between the execution of Turtle commands, probably requires a thread, the Interpreter needs a thread
+            Thread.Sleep(sleep.SleepDuration);
+        }
+
+        /// <summary>
+        /// Interprets the specified pen up command.
+        /// </summary>
+        /// <param name="penUp">The pen up command.</param>
+        public void Interpret(PenUpCommand penUp)
+        {
+            // just sets a bool in the current turtle
+            penUp.Turtle.PenIsDown = false;
+        }
+
+        /// <summary>
+        /// Interprets the specified pen down command.
+        /// </summary>
+        /// <param name="penDown">The pen down command.</param>
+        public void Interpret(PenDownCommand penDown)
+        {
+            // just sets a bool in the current turtle
+            penDown.Turtle.PenIsDown = true;
+        }
+
+        /// <summary>
+        /// Interprets the specified change color command.
+        /// </summary>
+        /// <param name="changeColor">Change Color command.</param>
+        public void Interpret(ChangeColorCommand changeColor)
+        {
+            // Changes the color of the current turtle
+            changeColor.Turtle.TrackColor = changeColor.Color;
+        }
+
+        /// <summary>
+        /// Interprets the specified change track symbol command.
+        /// </summary>
+        /// <param name="changeTrackSymbol">The change track symbol command.</param>
+        public void Interpret(ChangeTrackSymbolCommand changeTrackSymbol)
+        {
+            // Changes the tracksymbol that the turtle leaves behind.
+            changeTrackSymbol.Turtle.TrackSymbol = changeTrackSymbol.TrackSymbol;
+        }
+
+        /// <summary>
+        /// Interprets the specified change turtle symbol command.
+        /// </summary>
+        /// <param name="changeTurtleSymbol">The change turtle symbol command.</param>
+        public void Interpret(ChangeTurtleSymbolCommand changeTurtleSymbol)
+        {
+            // Changes the symbol representing the turtle.
+            changeTurtleSymbol.Turtle.TurtleSymbol.Symbol = changeTurtleSymbol.TurtleSymbol;
+        }
+    }
+}

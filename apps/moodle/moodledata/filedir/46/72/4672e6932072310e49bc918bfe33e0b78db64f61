@@ -1,0 +1,119 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="ChangeTurtleSymbolCommand.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of the ChangeTurtleSymbol Turtle Command.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi.TurtleCommmands
+{
+    using System;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+
+    /// <summary>
+    /// This class contains the methods and variables of the ChangeTurtleSymbol Turtle Command.
+    /// </summary>
+    /// <seealso cref="Aufgabe4_Istvan_Galfi.ITurtleCommand" />
+    public class ChangeTurtleSymbolCommand : ITurtleCommand
+    {
+        /// <summary>
+        /// The turtle.
+        /// </summary>
+        private Turtle turtle;
+
+        /// <summary>
+        /// Prevents a default instance of the <see cref="ChangeTurtleSymbolCommand"/> class from being created.
+        /// </summary>
+        private ChangeTurtleSymbolCommand()
+        {
+        }
+
+        /// <summary>
+        /// Gets the turtle symbol.
+        /// </summary>
+        /// <value>
+        /// The turtle symbol.
+        /// </value>
+        public char TurtleSymbol { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the turtle, this command belongs to.
+        /// </summary>
+        /// <value>
+        /// The turtle.
+        /// </value>
+        /// <exception cref="ArgumentNullException">The Turtle cant be null.</exception>
+        public Turtle Turtle
+        {
+            get
+            {
+                return this.turtle;
+            }
+
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("The Turtle cant be null.");
+                }
+
+                this.turtle = value;
+            }
+        }
+
+        /// <summary>
+        /// Parses the specified input, into an instance of this command.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>An instance of this command containing the desired value.</returns>
+        /// <exception cref="ArgumentNullException">The Change Turtle Symbol turtle command requires a character as its value.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The Symbol must be a single character.</exception>
+        public static ChangeTurtleSymbolCommand Parse(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentNullException("The Change Turtle Symbol turtle command requires a character as its value!");
+            }
+
+            ChangeTurtleSymbolCommand command = new ChangeTurtleSymbolCommand();
+
+            if (char.TryParse(value, out char temp))
+            {
+                command.TurtleSymbol = temp;
+                return command;
+            }
+
+            throw new ArgumentOutOfRangeException("The Symbol must be a single character!");
+        }
+
+        /// <summary>
+        /// Executes this Command.
+        /// </summary>
+        /// <param name="interpreter">The interpreter.</param>
+        public void Execute(Interpreter interpreter)
+        {
+            interpreter.Interpret(this);
+        }
+
+        /// <summary>
+        /// Draws this.
+        /// </summary>
+        /// <param name="renderer">The renderer.</param>
+        public void Draw(IRenderer renderer)
+        {
+            renderer.Draw(this);
+        }
+
+        /// <summary>
+        /// Converts to string.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            return "ChangeTurtleSymbol";
+        }
+    }
+}

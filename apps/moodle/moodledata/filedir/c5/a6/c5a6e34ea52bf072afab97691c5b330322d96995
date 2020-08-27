@@ -1,0 +1,430 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="ConsoleRenderer.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of the Console Renderer.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi
+{
+    using System;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+    using Aufgabe4_Istvan_Galfi.TurtleCommmands;
+
+    /// <summary>
+    /// This class contains the methods and variables of the Console Renderer.
+    /// </summary>
+    /// <seealso cref="Aufgabe4_Istvan_Galfi.Interfaces.IRenderer" />
+    public class ConsoleRenderer : IRenderer
+    {
+        /// <summary>
+        /// The turtle command color for pretty print.
+        /// </summary>
+        private const ConsoleColor TurtleCommandColor = ConsoleColor.Blue;
+
+        /// <summary>
+        /// The string argument color for pretty print.
+        /// </summary>
+        private const ConsoleColor StringArgumentColor = ConsoleColor.Yellow;
+
+        /// <summary>
+        /// The integer argument color for pretty print.
+        /// </summary>
+        private const ConsoleColor IntegerArgumentColor = ConsoleColor.Green;
+
+        /// <summary>
+        /// The minus prefix color for pretty print.
+        /// </summary>
+        private const ConsoleColor MinusPrefixColor = ConsoleColor.White;
+
+        /// <summary>
+        /// The renderer locker.
+        /// </summary>
+        private static object rendererLocker = new object();
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConsoleRenderer"/> class.
+        /// </summary>
+        /// <param name="canvas">The canvas to draw on.</param>
+        /// <exception cref="ArgumentNullException">The Passed canvas cannot be null.</exception>
+        public ConsoleRenderer(Canvas canvas)
+        {
+            if (canvas == null)
+            {
+                throw new ArgumentNullException("The Passed canvas cannot be null.");
+            }
+
+            this.DrawingBoard = canvas;
+        }
+
+        /// <summary>
+        /// Gets or sets the drawing board.
+        /// </summary>
+        /// <value>
+        /// The drawing board.
+        /// </value>
+        public Canvas DrawingBoard { get; set; }
+
+        /// <summary>
+        /// Resets the colors.
+        /// </summary>
+        public void ResetColors()
+        {
+            Console.ResetColor();
+        }
+
+        /// <summary>
+        /// Prints to the console.
+        /// </summary>
+        /// <param name="text">The text to print.</param>
+        public void CanvasFreePrint(string text)
+        {
+            Console.WriteLine(text);
+        }
+
+        /// <summary>
+        /// Prints the navigation instructions.
+        /// </summary>
+        /// <param name="left">The left offset.</param>
+        /// <param name="top">The top offset.</param>
+        public void PrintNavigationInstructions(int left, int top)
+        {
+            Console.ForegroundColor = ConsoleColor.Green;
+            Console.SetCursorPosition(left, top);
+            Console.Write("You may navigate the command list,");
+            Console.SetCursorPosition(left, top + 1);
+            Console.Write("by using the showline indexValue command-value pair.");
+
+            Console.SetCursorPosition(left, top + 3);
+            Console.Write("At the end of the Drawing session,");
+            Console.SetCursorPosition(left, top + 4);
+            Console.Write("you can exit the application by pressing Enter.");
+            this.ResetColors();
+        }
+
+        /// <summary>
+        /// Prints to a position anywhere in the console.
+        /// </summary>
+        /// <param name="text">The text to print.</param>
+        /// <param name="left">The left offset.</param>
+        /// <param name="top">The top offset.</param>
+        public void CanvasFreePrintToPos(string text, int left, int top)
+        {
+            Console.SetCursorPosition(left, top);
+            Console.Write(text);
+        }
+
+        /// <summary>
+        /// Prints the warning message to position.
+        /// </summary>
+        /// <param name="text">The text to print.</param>
+        /// <param name="left">The left offset.</param>
+        /// <param name="top">The top offset.</param>
+        public void CanvasFreePrintWarningMessageToPos(string text, int left, int top)
+        {
+            Console.ForegroundColor = ConsoleColor.Red;
+            Console.SetCursorPosition(left, top);
+            Console.Write(text);
+            this.ResetColors();
+        }
+
+        /// <summary>
+        /// Turns the cursor visibility off.
+        /// </summary>
+        public void TurnCursorVisibilityOff()
+        {
+            Console.CursorVisible = false;
+        }
+
+        /// <summary>
+        /// Redraws the canvas.
+        /// </summary>
+        public void RedrawCanvas()
+        {
+            Console.Clear();
+
+            // As the Content of the Drawing Board can change itself anytime it requires locking
+            lock (this.DrawingBoard.CanvasContentListLocker)
+            {
+                foreach (IRenderable character in this.DrawingBoard.CanvasContent)
+                {
+                    character.Draw(this);
+                }
+            }
+
+            foreach (IRenderable borderPart in this.DrawingBoard.CanvasBorder)
+            {
+                borderPart.Draw(this);
+            }
+        }
+
+        /// <summary>
+        /// Checks whether or not the position is outside the canvas bounds.
+        /// </summary>
+        /// <param name="left">The left offset.</param>
+        /// <param name="top">The top offset.</param>
+        /// <returns>True if yes, false if no.</returns>
+        public bool OutOfCanvasBounds(int left, int top)
+        {
+            if (left < this.DrawingBoard.Width && left >= 0 && top < this.DrawingBoard.Height && top >= 0)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        /// <summary>
+        /// Clears this instance.
+        /// </summary>
+        public void Clear()
+        {
+            Console.Clear();
+        }
+
+        /// <summary>
+        /// Draws the specified character.
+        /// </summary>
+        /// <param name="character">The character.</param>
+        public void Draw(Character character)
+        {
+            lock (rendererLocker)
+            {
+                Console.SetCursorPosition(character.Left, character.Top);
+                Console.ForegroundColor = character.CharacterColor.ContainedColor;
+
+                Console.Write(character.Symbol);
+            }
+
+            this.ResetColors();
+        }
+
+        /// <summary>
+        /// Draws the specified pen down command.
+        /// </summary>
+        /// <param name="penDownCommand">The pen down command.</param>
+        public void Draw(PenDownCommand penDownCommand)
+        {
+            this.PrintTurtleCommand(penDownCommand);
+            if (!this.DrawingBoard.CanvasContent.Contains(penDownCommand))
+            {
+                this.DrawingBoard.CanvasContent.Add(penDownCommand);
+            }
+        }
+
+        /// <summary>
+        /// Draws the specified pen up command.
+        /// </summary>
+        /// <param name="penUpCommand">The pen up command.</param>
+        public void Draw(PenUpCommand penUpCommand)
+        {
+            this.PrintTurtleCommand(penUpCommand);
+            if (!this.DrawingBoard.CanvasContent.Contains(penUpCommand))
+            {
+                this.DrawingBoard.CanvasContent.Add(penUpCommand);
+            }
+        }
+
+        /// <summary>
+        /// Draws the specified move command.
+        /// </summary>
+        /// <param name="moveCommand">The move command.</param>
+        public void Draw(MoveCommand moveCommand)
+        {
+            bool didPrint = this.PrintTurtleCommand(moveCommand);
+            if (didPrint)
+            {
+                if (!this.OutOfCanvasBounds(Console.CursorLeft, Console.CursorTop))
+                {
+                    Console.Write(" ");
+                }
+
+                this.PrintCommandIntegerArgumentValue(moveCommand.Value.ToString());
+                if (!this.DrawingBoard.CanvasContent.Contains(moveCommand))
+                {
+                    this.DrawingBoard.CanvasContent.Add(moveCommand);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draws the specified change color command.
+        /// </summary>
+        /// <param name="changeColorCommand">The change color command.</param>
+        public void Draw(ChangeColorCommand changeColorCommand)
+        {
+            bool didPrint = this.PrintTurtleCommand(changeColorCommand);
+            if (didPrint)
+            {
+                if (!this.OutOfCanvasBounds(Console.CursorLeft, Console.CursorTop))
+                {
+                    Console.Write(" ");
+                }
+
+                this.PrintCommandStringArgumentValue(changeColorCommand.Color.ContainedColor.ToString());
+                if (!this.DrawingBoard.CanvasContent.Contains(changeColorCommand))
+                {
+                    this.DrawingBoard.CanvasContent.Add(changeColorCommand);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draws the specified change track symbol command.
+        /// </summary>
+        /// <param name="changeTrackSymbolCommand">The change track symbol command.</param>
+        public void Draw(ChangeTrackSymbolCommand changeTrackSymbolCommand)
+        {
+            bool didPrint = this.PrintTurtleCommand(changeTrackSymbolCommand);
+
+            if (didPrint)
+            {
+                if (!this.OutOfCanvasBounds(Console.CursorLeft, Console.CursorTop))
+                {
+                    Console.Write(" ");
+                }
+
+                this.PrintCommandStringArgumentValue(changeTrackSymbolCommand.TrackSymbol.ToString());
+                if (!this.DrawingBoard.CanvasContent.Contains(changeTrackSymbolCommand))
+                {
+                    this.DrawingBoard.CanvasContent.Add(changeTrackSymbolCommand);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draws the specified change turtle symbol command.
+        /// </summary>
+        /// <param name="changeTurtleSymbolCommand">The change turtle symbol command.</param>
+        public void Draw(ChangeTurtleSymbolCommand changeTurtleSymbolCommand)
+        {
+            bool didPrint = this.PrintTurtleCommand(changeTurtleSymbolCommand);
+            if (didPrint)
+            {
+                if (!this.OutOfCanvasBounds(Console.CursorLeft, Console.CursorTop))
+                {
+                    Console.Write(" ");
+                }
+
+                this.PrintCommandStringArgumentValue(changeTurtleSymbolCommand.TurtleSymbol.ToString());
+                if (!this.DrawingBoard.CanvasContent.Contains(changeTurtleSymbolCommand))
+                {
+                    this.DrawingBoard.CanvasContent.Add(changeTurtleSymbolCommand);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draws the specified sleep command.
+        /// </summary>
+        /// <param name="sleepCommand">The sleep command.</param>
+        public void Draw(SleepCommand sleepCommand)
+        {
+            bool didPrint = this.PrintTurtleCommand(sleepCommand);
+            if (didPrint)
+            {
+                if (!this.OutOfCanvasBounds(Console.CursorLeft, Console.CursorTop))
+                {
+                    Console.Write(" ");
+                }
+
+                this.PrintCommandIntegerArgumentValue(sleepCommand.SleepDuration.ToString());
+                if (!this.DrawingBoard.CanvasContent.Contains(sleepCommand))
+                {
+                    this.DrawingBoard.CanvasContent.Add(sleepCommand);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Draws the specified rotate command.
+        /// </summary>
+        /// <param name="rotateCommand">The rotate command.</param>
+        public void Draw(RotateCommand rotateCommand)
+        {
+            bool didPrint = this.PrintTurtleCommand(rotateCommand);
+            if (didPrint)
+            {
+                if (!this.OutOfCanvasBounds(Console.CursorLeft, Console.CursorTop))
+                {
+                    Console.Write(" ");
+                }
+
+                this.PrintCommandIntegerArgumentValue(rotateCommand.Degree.ToString());
+                if (!this.DrawingBoard.CanvasContent.Contains(rotateCommand))
+                {
+                    this.DrawingBoard.CanvasContent.Add(rotateCommand);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Prints the turtle command.
+        /// </summary>
+        /// <param name="turtleCommand">The turtle command.</param>
+        /// <returns>True if printed, false if did not.</returns>
+        private bool PrintTurtleCommand(ITurtleCommand turtleCommand)
+        {
+            int actualLeft = this.DrawingBoard.ViewOriginLeft + 1;
+            int actualTop = this.DrawingBoard.ViewOriginTop + this.DrawingBoard.CanvasContent.IndexOf(turtleCommand);
+            if (!this.OutOfCanvasBounds(actualLeft, actualTop))
+            {
+                Console.SetCursorPosition(actualLeft, actualTop);
+                Console.ForegroundColor = TurtleCommandColor;
+                Console.Write(turtleCommand.ToString());
+                this.ResetColors();
+
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Prints the command string argument value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        private void PrintCommandStringArgumentValue(string value)
+        {
+            for (int index = 0; index < value.Length; index++)
+            {
+                if (!this.OutOfCanvasBounds(Console.CursorLeft, Console.CursorTop))
+                {
+                    Console.ForegroundColor = StringArgumentColor;
+                    Console.Write(value[index]);
+                }
+            }
+
+            this.ResetColors();
+        }
+
+        /// <summary>
+        /// Prints the command integer argument value.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        private void PrintCommandIntegerArgumentValue(string value)
+        {
+            if (int.Parse(value) < 0)
+            {
+                if (!this.OutOfCanvasBounds(Console.CursorLeft, Console.CursorTop))
+                {
+                    Console.ForegroundColor = MinusPrefixColor;
+                    Console.Write(value[0]);
+                }
+            }
+
+            int startingIndex = int.Parse(value) < 0 ? 1 : 0;
+            for (int index = startingIndex; index < value.Length; index++)
+            {
+                if (!this.OutOfCanvasBounds(Console.CursorLeft, Console.CursorTop))
+                {
+                    Console.ForegroundColor = IntegerArgumentColor;
+                    Console.Write(value[index]);
+                }
+            }
+
+            this.ResetColors();
+        }
+    }
+}

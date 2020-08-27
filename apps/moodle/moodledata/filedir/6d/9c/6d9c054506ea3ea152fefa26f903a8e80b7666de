@@ -1,0 +1,24 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="ICommand.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This Interface contains the methods and properties that needs to be implemented by every command.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi.Interfaces
+{
+    using System;
+
+    /// <summary>
+    /// This Interface contains the methods and properties that needs to be implemented by every command.
+    /// </summary>
+    public interface ICommand
+    {
+        /// <summary>
+        /// Executes this command.
+        /// </summary>
+        /// <param name="interpreter">The interpreter.</param>
+        void Execute(Interpreter interpreter);
+    }
+}

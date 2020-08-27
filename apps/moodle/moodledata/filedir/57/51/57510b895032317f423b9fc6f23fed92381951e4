@@ -1,0 +1,120 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="SleepCommand.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of the Sleep Turtle Command.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi.TurtleCommmands
+{
+    using System;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+
+    /// <summary>
+    /// This class contains the methods and variables of the Sleep Turtle Command.
+    /// </summary>
+    /// <seealso cref="Aufgabe4_Istvan_Galfi.ITurtleCommand" />
+    public class SleepCommand : ITurtleCommand
+    {
+        /// <summary>
+        /// The turtle.
+        /// </summary>
+        private Turtle turtle;
+
+        /// <summary>
+        /// Prevents a default instance of the <see cref="SleepCommand"/> class from being created.
+        /// </summary>
+        private SleepCommand()
+        {
+        }
+
+        /// <summary>
+        /// Gets the duration of the sleep.
+        /// </summary>
+        /// <value>
+        /// The duration of the sleep.
+        /// </value>
+        public int SleepDuration { get; private set; }
+
+        /// <summary>
+        /// Gets or sets the turtle, this command belongs to.
+        /// </summary>
+        /// <value>
+        /// The turtle.
+        /// </value>
+        /// <exception cref="ArgumentNullException">The Turtle cant be null.</exception>
+        public Turtle Turtle
+        {
+            get
+            {
+                return this.turtle;
+            }
+
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException("The Turtle cant be null.");
+                }
+
+                this.turtle = value;
+            }
+        }
+
+        /// <summary>
+        /// Parses the specified value, into an instance of this command.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>An instance of this command containing the desired value.</returns>
+        /// <exception cref="ArgumentNullException">The sleep turtle command requires a value.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">The Duration of Sleep must be a whole number between {lowLimit} and {highLimit}.</exception>
+        public static SleepCommand Parse(string value)
+        {
+            if (string.IsNullOrEmpty(value))
+            {
+                throw new ArgumentNullException("The sleep turtle command requires a value!");
+            }
+
+            SleepCommand command = new SleepCommand();
+            int lowLimit = 100;
+            int highLimit = 10000;
+            if (int.TryParse(value, out int temp) && temp <= highLimit && temp >= lowLimit)
+            {
+                command.SleepDuration = temp;
+                return command;
+            }
+
+            throw new ArgumentOutOfRangeException($"The Duration of Sleep must be a whole number between {lowLimit} and {highLimit}!");
+        }
+
+        /// <summary>
+        /// Executes this Command.
+        /// </summary>
+        /// <param name="interpreter">The interpreter.</param>
+        public void Execute(Interpreter interpreter)
+        {
+            interpreter.Interpret(this);
+        }
+
+        /// <summary>
+        /// Draws the specified renderer.
+        /// </summary>
+        /// <param name="renderer">The renderer.</param>
+        public void Draw(IRenderer renderer)
+        {
+            renderer.Draw(this);
+        }
+
+        /// <summary>
+        /// Converts to string.
+        /// </summary>
+        /// <returns>
+        /// A <see cref="System.String" /> that represents this instance.
+        /// </returns>
+        public override string ToString()
+        {
+            return "Sleep";
+        }
+    }
+}

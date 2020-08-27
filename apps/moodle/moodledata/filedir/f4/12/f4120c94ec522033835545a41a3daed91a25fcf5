@@ -1,0 +1,29 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="RunCommand.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of the Run Editor Command.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi.EditorCommands
+{
+    using System;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+
+    /// <summary>
+    /// This class contains the methods and variables of the Run Editor Command.
+    /// </summary>
+    /// <seealso cref="Aufgabe4_Istvan_Galfi.ICommand" />
+    public class RunCommand : ICommand
+    {
+        /// <summary>
+        /// Executes this command.
+        /// </summary>
+        /// <param name="interpreter">The interpreter.</param>
+        public void Execute(Interpreter interpreter)
+        {
+            interpreter.Interpret(this);
+        }
+    }
+}

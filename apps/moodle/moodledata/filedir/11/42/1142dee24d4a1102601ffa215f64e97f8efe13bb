@@ -1,0 +1,42 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="OnTurtleMoveEventArgs.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the variables of the On Turtle Move Event Argument.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi.EventArguments
+{
+    using System;
+
+    /// <summary>
+    /// This class contains the variables of the On Turtle Move Event Argument.
+    /// </summary>
+    /// <seealso cref="System.EventArgs" />
+    public class OnTurtleMoveEventArgs : EventArgs
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="OnTurtleMoveEventArgs"/> class.
+        /// </summary>
+        /// <param name="senderTurtle">The sender turtle.</param>
+        /// <exception cref="ArgumentNullException">The passed Turtle cant be null.</exception>
+        public OnTurtleMoveEventArgs(Turtle senderTurtle)
+        {
+            if (senderTurtle == null)
+            {
+                throw new ArgumentNullException("The passed Rurtle cant be null.");
+            }
+
+            this.SenderTurtle = senderTurtle;
+        }
+
+        /// <summary>
+        /// Gets the sender turtle.
+        /// </summary>
+        /// <value>
+        /// The sender turtle.
+        /// </value>
+        public Turtle SenderTurtle { get; private set; }
+    }
+}

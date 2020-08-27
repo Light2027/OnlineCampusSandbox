@@ -1,0 +1,126 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="ConsoleSettings.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of the Console Settings.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi
+{
+    using System;
+
+    /// <summary>
+    /// This class contains the methods and variables of the Console Settings.
+    /// </summary>
+    public class ConsoleSettings
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ConsoleSettings"/> class.
+        /// </summary>
+        /// <param name="backgroundColor">Color of the background.</param>
+        /// <param name="foregroundColor">Color of the foreground.</param>
+        /// <param name="bufferHeight">Height of the buffer.</param>
+        /// <param name="bufferWidth">Width of the buffer.</param>
+        /// <param name="windowHeight">Height of the window.</param>
+        /// <param name="windowWidth">Width of the window.</param>
+        public ConsoleSettings(ConsoleColor backgroundColor, ConsoleColor foregroundColor, int bufferHeight, int bufferWidth, int windowHeight, int windowWidth)
+        {
+            this.BackgroundColor = backgroundColor;
+            this.ForegroundColor = foregroundColor;
+            this.BufferHeight = bufferHeight;
+            this.BufferWidth = bufferWidth;
+            this.WindowHeight = windowHeight;
+            this.WindowWidth = windowWidth;
+        }
+
+        /// <summary>
+        /// Prevents a default instance of the <see cref="ConsoleSettings"/> class from being created.
+        /// </summary>
+        private ConsoleSettings()
+        {
+        }
+
+        /// <summary>
+        /// Gets or sets the color of the background.
+        /// </summary>
+        /// <value>
+        /// The color of the background.
+        /// </value>
+        public ConsoleColor BackgroundColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the color of the foreground.
+        /// </summary>
+        /// <value>
+        /// The color of the foreground.
+        /// </value>
+        public ConsoleColor ForegroundColor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the height of the buffer.
+        /// </summary>
+        /// <value>
+        /// The height of the buffer.
+        /// </value>
+        public int BufferHeight { get; set; }
+
+        /// <summary>
+        /// Gets or sets the width of the buffer.
+        /// </summary>
+        /// <value>
+        /// The width of the buffer.
+        /// </value>
+        public int BufferWidth { get; set; }
+
+        /// <summary>
+        /// Gets or sets the height of the window.
+        /// </summary>
+        /// <value>
+        /// The height of the window.
+        /// </value>
+        public int WindowHeight { get; set; }
+
+        /// <summary>
+        /// Gets or sets the width of the window.
+        /// </summary>
+        /// <value>
+        /// The width of the window.
+        /// </value>
+        public int WindowWidth { get; set; }
+
+        /// <summary>
+        /// Captures the current Console Settings.
+        /// </summary>
+        /// <returns>A New Instance Containing the Captured settings.</returns>
+        public static ConsoleSettings Capture()
+        {
+            ConsoleSettings settings = new ConsoleSettings();
+
+            settings.BackgroundColor = Console.BackgroundColor;
+            settings.ForegroundColor = Console.ForegroundColor;
+
+            settings.WindowHeight = Console.WindowHeight;
+            settings.WindowWidth = Console.WindowWidth;
+
+            settings.BufferHeight = Console.BufferHeight;
+            settings.BufferWidth = Console.BufferWidth;
+
+            return settings;
+        }
+
+        /// <summary>
+        /// Resets the specified settings.
+        /// </summary>
+        /// <param name="settings">The settings.</param>
+        public static void Reset(ConsoleSettings settings)
+        {
+            Console.BackgroundColor = settings.BackgroundColor;
+            Console.ForegroundColor = settings.ForegroundColor;
+            Console.WindowHeight = settings.WindowHeight;
+            Console.WindowWidth = settings.WindowWidth;
+            Console.BufferHeight = settings.BufferHeight;
+            Console.BufferWidth = settings.BufferWidth;
+        }
+    }
+}

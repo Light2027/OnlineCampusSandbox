@@ -1,0 +1,52 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="AddCommand.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of the Add Editor Command.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi.EditorCommands
+{
+    using System;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+
+    /// <summary>
+    /// This class contains the methods and variables of the Add Editor Command.
+    /// </summary>
+    /// <seealso cref="Aufgabe4_Istvan_Galfi.ICommand" />
+    public class AddCommand : ICommand
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AddCommand"/> class.
+        /// </summary>
+        /// <param name="command">The command.</param>
+        /// <exception cref="ArgumentNullException">The Turtle command cant be null.</exception>
+        public AddCommand(ITurtleCommand command)
+        {
+            if (command == null)
+            {
+                throw new ArgumentNullException("The Turtle command cant be null.");
+            }
+
+            this.TurtleCommand = command;
+        }
+
+        /// <summary>
+        /// Gets the turtle command, contained within this class.
+        /// </summary>
+        /// <value>
+        /// The turtle command.
+        /// </value>
+        public ITurtleCommand TurtleCommand { get; private set; }
+
+        /// <summary>
+        /// Executes this command.
+        /// </summary>
+        /// <param name="interpreter">The interpreter.</param>
+        public void Execute(Interpreter interpreter)
+        {
+            interpreter.Interpret(this);
+        }
+    }
+}

@@ -1,0 +1,62 @@
+﻿//-----------------------------------------------------------------------
+// <copyright file="InsertCommand.cs" company="FHWN">
+//     Copyright (c) Sprocket Enterprises. All rights reserved.
+// </copyright>
+// <author>Galfi Istvan Balazs</author>
+// <summary>This class contains the methods and variables of the Insert Editor Command.</summary>
+//-----------------------------------------------------------------------
+
+namespace Aufgabe4_Istvan_Galfi.EditorCommands
+{
+    using System;
+    using Aufgabe4_Istvan_Galfi.Interfaces;
+
+    /// <summary>
+    /// This class contains the methods and variables of the Insert Editor Command.
+    /// </summary>
+    /// <seealso cref="Aufgabe4_Istvan_Galfi.ICommand" />
+    public class InsertCommand : ICommand
+    {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="InsertCommand"/> class.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <param name="command">The command.</param>
+        /// <exception cref="ArgumentNullException">The Turtle command cant be null.</exception>
+        public InsertCommand(int index, ITurtleCommand command)
+        {
+            if (command == null)
+            {
+                throw new ArgumentNullException("The Turtle command cant be null.");
+            }
+
+            this.Index = index;
+            this.TurtleCommand = command;
+        }
+
+        /// <summary>
+        /// Gets the index, at which the turtle command will be inserted.
+        /// </summary>
+        /// <value>
+        /// The index.
+        /// </value>
+        public int Index { get; private set; }
+
+        /// <summary>
+        /// Gets the turtle command, contained within this class.
+        /// </summary>
+        /// <value>
+        /// The turtle command.
+        /// </value>
+        public ITurtleCommand TurtleCommand { get; private set; }
+
+        /// <summary>
+        /// Executes this command.
+        /// </summary>
+        /// <param name="interpreter">The interpreter.</param>
+        public void Execute(Interpreter interpreter)
+        {
+            interpreter.Interpret(this);
+        }
+    }
+}

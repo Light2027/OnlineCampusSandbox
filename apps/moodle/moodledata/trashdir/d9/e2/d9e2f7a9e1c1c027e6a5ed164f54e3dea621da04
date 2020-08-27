@@ -1,0 +1,273 @@
+{
+  "log": {
+    "version": "1.2",
+    "creator": {
+      "name": "Firefox",
+      "version": "79.0"
+    },
+    "browser": {
+      "name": "Firefox",
+      "version": "79.0"
+    },
+    "pages": [
+      {
+        "startedDateTime": "2020-08-20T09:56:50.222+02:00",
+        "id": "page_1",
+        "title": "Exabis Library: Manage Library Content",
+        "pageTimings": {
+          "onContentLoad": 791,
+          "onLoad": 889
+        }
+      }
+    ],
+    "entries": [
+      {
+        "pageref": "page_1",
+        "startedDateTime": "2020-08-20T09:56:50.222+02:00",
+        "request": {
+          "bodySize": 593,
+          "method": "POST",
+          "url": "http://127.0.0.1/moodle/blocks/exalib/admin.php?courseid=1&show=add",
+          "httpVersion": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Host",
+              "value": "127.0.0.1"
+            },
+            {
+              "name": "User-Agent",
+              "value": "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:79.0) Gecko/20100101 Firefox/79.0"
+            },
+            {
+              "name": "Accept",
+              "value": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8"
+            },
+            {
+              "name": "Accept-Language",
+              "value": "en-US,en;q=0.5"
+            },
+            {
+              "name": "Accept-Encoding",
+              "value": "gzip, deflate"
+            },
+            {
+              "name": "Content-Type",
+              "value": "application/x-www-form-urlencoded"
+            },
+            {
+              "name": "Content-Length",
+              "value": "593"
+            },
+            {
+              "name": "Origin",
+              "value": "http://127.0.0.1"
+            },
+            {
+              "name": "Connection",
+              "value": "keep-alive"
+            },
+            {
+              "name": "Referer",
+              "value": "http://127.0.0.1/moodle/blocks/exalib/admin.php?courseid=1&show=add"
+            },
+            {
+              "name": "Cookie",
+              "value": "MoodleSession=cf82ngost2t1nr9r9ogrhrlp6l"
+            },
+            {
+              "name": "Upgrade-Insecure-Requests",
+              "value": "1"
+            }
+          ],
+          "cookies": [
+            {
+              "name": "MoodleSession",
+              "value": "cf82ngost2t1nr9r9ogrhrlp6l"
+            }
+          ],
+          "queryString": [
+            {
+              "name": "courseid",
+              "value": "1"
+            },
+            {
+              "name": "show",
+              "value": "add"
+            }
+          ],
+          "headersSize": 605,
+          "postData": {
+            "mimeType": "application/x-www-form-urlencoded",
+            "params": [
+              {
+                "name": "mform_isexpanded_id_contentheader",
+                "value": "1"
+              },
+              {
+                "name": "mform_isexpanded_id_categoriesheader",
+                "value": "1"
+              },
+              {
+                "name": "sesskey",
+                "value": "uGAWzg1Fsr"
+              },
+              {
+                "name": "_qf__item_edit_form",
+                "value": "1"
+              },
+              {
+                "name": "mform_isexpanded_id_onlineheader",
+                "value": "0"
+              },
+              {
+                "name": "name",
+                "value": "NameOfBook"
+              },
+              {
+                "name": "source",
+                "value": "SourceOfBook"
+              },
+              {
+                "name": "authors",
+                "value": "AuthorOfBook"
+              },
+              {
+                "name": "year",
+                "value": "2010"
+              },
+              {
+                "name": "abstract_editor[text]",
+                "value": "AbstractOfBook"
+              },
+              {
+                "name": "abstract_editor[format]",
+                "value": "1"
+              },
+              {
+                "name": "link",
+                "value": "LinkOfBook"
+              },
+              {
+                "name": "content_editor[text]",
+                "value": "<p dir=\"ltr\" style=\"text-align: left;\">ContentOfBook<br></p>"
+              },
+              {
+                "name": "content_editor[format]",
+                "value": "1"
+              },
+              {
+                "name": "file_filemanager",
+                "value": "55600416"
+              },
+              {
+                "name": "preview_image_filemanager",
+                "value": "664704062"
+              },
+              {
+                "name": "categories[]",
+                "value": "1001"
+              },
+              {
+                "name": "online",
+                "value": "0"
+              },
+              {
+                "name": "online",
+                "value": "1"
+              },
+              {
+                "name": "allow_comments",
+                "value": ""
+              },
+              {
+                "name": "submitbutton",
+                "value": "Save changes"
+              }
+            ],
+            "text": "mform_isexpanded_id_contentheader=1&mform_isexpanded_id_categoriesheader=1&sesskey=uGAWzg1Fsr&_qf__item_edit_form=1&mform_isexpanded_id_onlineheader=0&name=NameOfBook&source=SourceOfBook&authors=AuthorOfBook&year=2010&abstract_editor%5Btext%5D=AbstractOfBook&abstract_editor%5Bformat%5D=1&link=LinkOfBook&content_editor%5Btext%5D=%3Cp+dir%3D%22ltr%22+style%3D%22text-align%3A+left%3B%22%3EContentOfBook%3Cbr%3E%3C%2Fp%3E&content_editor%5Bformat%5D=1&file_filemanager=55600416&preview_image_filemanager=664704062&categories%5B%5D=1001&online=0&online=1&allow_comments=&submitbutton=Save+changes"
+          }
+        },
+        "response": {
+          "status": 303,
+          "statusText": "See Other",
+          "httpVersion": "HTTP/1.1",
+          "headers": [
+            {
+              "name": "Date",
+              "value": "Thu, 20 Aug 2020 07:56:50 GMT"
+            },
+            {
+              "name": "Server",
+              "value": "Apache/2.4.43 (Win64) OpenSSL/1.1.1g PHP/7.4.8"
+            },
+            {
+              "name": "X-Powered-By",
+              "value": "PHP/7.4.8"
+            },
+            {
+              "name": "Expires",
+              "value": "Thu, 19 Nov 1981 08:52:00 GMT"
+            },
+            {
+              "name": "Cache-Control",
+              "value": "no-store, no-cache, must-revalidate"
+            },
+            {
+              "name": "Pragma",
+              "value": "no-cache"
+            },
+            {
+              "name": "X-Redirect-By",
+              "value": "Moodle"
+            },
+            {
+              "name": "Location",
+              "value": "http://127.0.0.1/moodle/blocks/exalib/admin.php?courseid=1"
+            },
+            {
+              "name": "Content-Language",
+              "value": "en"
+            },
+            {
+              "name": "Content-Length",
+              "value": "456"
+            },
+            {
+              "name": "Keep-Alive",
+              "value": "timeout=5, max=99"
+            },
+            {
+              "name": "Connection",
+              "value": "Keep-Alive"
+            },
+            {
+              "name": "Content-Type",
+              "value": "text/html; charset=utf-8"
+            }
+          ],
+          "cookies": [],
+          "content": {
+            "mimeType": "text/html; charset=utf-8",
+            "size": 138000,
+            "comment": "Response bodies are not included."
+          },
+          "redirectURL": "http://127.0.0.1/moodle/blocks/exalib/admin.php?courseid=1",
+          "headersSize": 485,
+          "bodySize": 138485
+        },
+        "cache": {},
+        "timings": {
+          "blocked": 1,
+          "dns": 0,
+          "connect": 0,
+          "ssl": 0,
+          "send": 0,
+          "wait": 297,
+          "receive": 0
+        },
+        "time": 298,
+        "_securityState": "insecure",
+        "serverIPAddress": "127.0.0.1",
+        "connection": "80"
+      }
+}
